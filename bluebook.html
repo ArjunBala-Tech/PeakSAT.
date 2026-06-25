@@ -1,0 +1,1143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>PeakSAT | Practice Test</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Georgia&display=swap" rel="stylesheet">
+  <style>
+    /* ═══════════════════════════════════════
+       PEAKSAT DASHBOARD THEME
+       Dark oxblood UI, chili + peach accents
+    ═══════════════════════════════════════ */
+    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+
+    :root {
+      --chili:    #E62E2D;
+      --peach:    #FFB4A2;
+      --deep-red: #A4161A;
+      --oxblood:  #38000A;
+      --cb-blue:   #FFB4A2;   /* legacy alias → peach accent */
+      --cb-navy:   #E62E2D;   /* legacy alias → chili (button surfaces) */
+      --cb-text:   #FFF0ED;
+      --cb-muted:  #C8A49D;
+      --cb-border: rgba(255,180,162,0.15);
+      --cb-bg:     #140204;
+      --cb-white:  rgba(255,255,255,0.04);
+      --cb-sel:    rgba(255,180,162,0.12);
+      --cb-correct:#06D6A0;
+      --cb-wrong:  #E62E2D;
+      --card:      rgba(255,255,255,0.04);
+      --line:      rgba(255,180,162,0.15);
+      --text:      #FFF0ED;
+      --muted:     #C8A49D;
+      --dot-easy:  #06D6A0;
+      --dot-med:   #FFD166;
+      --dot-hard:  #E62E2D;
+      --dot-unanswered: rgba(255,180,162,0.18);
+      --dot-answered:   #FFB4A2;
+      --dot-marked: #FFD166;
+    }
+
+    html, body {
+      height:100%; overflow:hidden;
+      font-family:'Inter', Arial, sans-serif;
+      color:var(--text);
+      background:
+        radial-gradient(circle at 10% 10%, rgba(230,46,45,0.14), transparent 30%),
+        radial-gradient(circle at 90% 80%, rgba(255,180,162,0.09), transparent 30%),
+        linear-gradient(135deg, #0B0102 0%, #1A0204 50%, #38000A 100%);
+    }
+
+    /* ── TOP HEADER BAR ── */
+    #bb-header {
+      height: 56px;
+      background: rgba(0,0,0,0.3);
+      border-bottom: 1px solid var(--cb-border);
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 24px; gap: 20px; flex-shrink: 0; position: relative; z-index: 100;
+    }
+    .bb-header-left  { display:flex; flex-direction:column; gap:1px; }
+    .bb-section-title{ font-size:1rem; font-weight:700; color:var(--text); font-family:'Space Grotesk',sans-serif; }
+    .bb-directions   { font-size:0.78rem; color:var(--peach); cursor:pointer; display:flex; align-items:center; gap:4px; user-select:none; }
+    .bb-directions svg { width:13px; height:13px; flex-shrink:0; }
+    #bb-q-pill svg { width:12px; height:12px; flex-shrink:0; }
+    .bb-directions:hover { text-decoration:underline; }
+
+    .bb-header-center { display:flex; flex-direction:column; align-items:center; gap:1px; }
+    #bb-timer {
+      font-size:1.4rem; font-weight:800; color:var(--text);
+      font-family:'Space Grotesk',sans-serif;
+      font-variant-numeric:tabular-nums; letter-spacing:1px;
+    }
+    #bb-timer.warn   { color:#FFD166; }
+    #bb-timer.urgent { color:var(--chili); animation: pulse 0.8s infinite; }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.55} }
+    #bb-hide-timer { font-size:0.72rem; color:var(--peach); cursor:pointer; border:1px solid var(--cb-border); border-radius:4px; padding:2px 8px; background:rgba(255,255,255,0.04); }
+    #bb-hide-timer:hover { background:var(--cb-sel); }
+
+    .bb-header-right { display:flex; align-items:center; gap:14px; }
+    .bb-header-icon  { display:flex; flex-direction:column; align-items:center; gap:2px; cursor:pointer; color:var(--cb-muted); font-size:0.7rem; }
+    .bb-header-icon svg { width:20px; height:20px; }
+    .bb-header-icon:hover { color:var(--cb-blue); }
+
+    /* ── PROGRESS DOT STRIP ── */
+    #bb-dotstrip {
+      height:10px; background:transparent; border-bottom:1px solid var(--cb-border);
+      display:flex; align-items:center; padding:0 12px; gap:3px; flex-wrap:nowrap;
+      overflow:hidden; flex-shrink:0;
+    }
+    .bb-dot {
+      width:14px; height:6px; border-radius:3px; flex-shrink:0;
+      background: var(--dot-unanswered); transition: background 0.2s;
+      cursor:pointer;
+    }
+    .bb-dot.answered { background:var(--dot-answered); }
+    .bb-dot.current  { background:var(--peach); outline:2px solid var(--peach); outline-offset:1px; }
+    .bb-dot.marked   { background:var(--dot-marked); }
+    .bb-dot.correct  { background:var(--dot-easy); }
+    .bb-dot.wrong    { background:var(--cb-wrong); }
+
+    /* ── MAIN BODY ── */
+    #bb-body {
+      display:flex; height:calc(100vh - 56px - 10px - 52px);
+      overflow:hidden;
+    }
+
+    /* Left pane — passage */
+    #bb-left {
+      flex:1; overflow-y:auto; padding:28px 32px;
+      border-right:1px solid var(--cb-border);
+      background:rgba(0,0,0,0.18);
+    }
+    /* Right pane — question */
+    #bb-right {
+      flex:1; overflow-y:auto; padding:0;
+      background:transparent;
+    }
+
+    /* Pane resize handles */
+    #bb-divider {
+      width:6px; background:rgba(255,180,162,0.12); cursor:col-resize; flex-shrink:0;
+      position:relative;
+    }
+    #bb-divider:hover { background:var(--peach); }
+
+    /* Pane expand/collapse icons (top-right of each pane) */
+    .bb-pane-icons {
+      position:sticky; top:0; background:transparent;
+      border-bottom:1px solid var(--cb-border); padding:6px 10px;
+      display:flex; justify-content:flex-end; gap:6px; z-index:10;
+    }
+    .bb-pane-icon {
+      width:26px; height:26px; border:1px solid var(--cb-border); border-radius:4px;
+      display:flex; align-items:center; justify-content:center;
+      cursor:pointer; color:var(--cb-muted); background:rgba(255,255,255,0.04);
+    }
+    .bb-pane-icon:hover { background:var(--cb-sel); color:var(--cb-blue); }
+    .bb-pane-icon svg { width:14px; height:14px; }
+
+    /* Passage content */
+    #bb-passage-content { font-family:'Georgia', serif; font-size:1rem; line-height:1.8; color:var(--text); }
+    #bb-passage-content p { margin-bottom:12px; }
+    #bb-passage-content ul { padding-left:22px; margin-bottom:12px; }
+    #bb-passage-content li { margin-bottom:6px; }
+
+    /* Single-pane (no passage) — center the question column */
+    #bb-body.bb-single-pane #bb-right { display:flex; flex-direction:column; align-items:center; }
+    #bb-body.bb-single-pane #bb-q-header,
+    #bb-body.bb-single-pane #bb-q-body { width:100%; max-width:760px; }
+    #bb-body.bb-single-pane .bb-pane-icons { display:none; }
+    #bb-body.bb-single-pane #bb-q-header { position:static; padding-top:28px; }
+    #bb-body.bb-single-pane #bb-q-body { padding-top:8px; }
+
+    /* Question header row */
+    #bb-q-header {
+      padding:14px 20px 10px; border-bottom:1px solid var(--cb-border);
+      display:flex; align-items:center; gap:10px; background:transparent;
+      position:sticky; top:36px; z-index:9;
+    }
+    .bb-qnum {
+      width:32px; height:32px; border-radius:6px;
+      background:linear-gradient(135deg, var(--chili), var(--deep-red)); color:#fff;
+      display:flex; align-items:center; justify-content:center;
+      font-weight:800; font-size:0.95rem; flex-shrink:0;
+      font-family:'Space Grotesk', sans-serif;
+      box-shadow:0 4px 14px rgba(230,46,45,0.3);
+    }
+    #bb-mark-btn {
+      display:flex; align-items:center; gap:6px; font-size:0.82rem;
+      font-weight:600; color:var(--cb-muted); cursor:pointer; border:none;
+      background:none; padding:5px 10px; border-radius:4px; font-family:'Inter',sans-serif;
+      border:1px solid var(--cb-border);
+    }
+    #bb-mark-btn.marked { color:#FFD166; border-color:rgba(255,209,102,0.5); background:rgba(255,209,102,0.1); }
+    #bb-mark-btn:hover { background:var(--cb-sel); color:var(--peach); }
+    #bb-mark-btn svg { width:15px; height:15px; }
+    .bb-abc-btn {
+      margin-left:auto; width:32px; height:32px; border:1px solid var(--cb-border);
+      border-radius:4px; display:flex; align-items:center; justify-content:center;
+      cursor:pointer; background:rgba(255,255,255,0.04); color:var(--cb-muted); font-size:0.8rem; font-weight:700;
+    }
+    .bb-abc-btn:hover { background:var(--cb-sel); }
+
+    /* Question body */
+    #bb-q-body { padding:16px 18px 20px; }
+    #bb-question-stem {
+      font-size:0.97rem; line-height:1.65; color:var(--cb-text); margin-bottom:18px;
+    }
+
+    /* Options */
+    .bb-option {
+      display:flex; align-items:flex-start; gap:12px;
+      border:1.5px solid var(--cb-border); border-radius:8px;
+      padding:13px 15px; margin-bottom:10px; cursor:pointer;
+      transition:border-color 0.15s, background 0.15s;
+      background:rgba(255,255,255,0.03);
+    }
+    .bb-option:hover:not(.disabled) { border-color:var(--cb-blue); background:var(--cb-sel); }
+    .bb-option.selected { border-color:var(--cb-blue); background:var(--cb-sel); }
+    .bb-option.correct  { border-color:var(--cb-correct)!important; background:rgba(6,214,160,0.12)!important; }
+    .bb-option.wrong    { border-color:var(--cb-wrong)!important;   background:rgba(230,46,45,0.12)!important; }
+    .bb-option.disabled { cursor:default; }
+
+    .bb-opt-circle {
+      width:28px; height:28px; border-radius:50%; border:1.5px solid var(--cb-border);
+      display:flex; align-items:center; justify-content:center;
+      font-weight:700; font-size:0.85rem; flex-shrink:0; color:var(--cb-muted);
+      transition:all 0.15s;
+    }
+    .bb-option.selected .bb-opt-circle { border-color:var(--peach); color:var(--peach); background:var(--cb-sel); }
+    .bb-option.correct  .bb-opt-circle { border-color:var(--cb-correct); color:var(--cb-correct); background:rgba(6,214,160,0.14); }
+    .bb-option.wrong    .bb-opt-circle { border-color:var(--cb-wrong);   color:var(--cb-wrong);   background:rgba(230,46,45,0.14); }
+    .bb-opt-text { font-size:0.95rem; line-height:1.6; color:var(--cb-text); padding-top:2px; }
+
+    /* Feedback box */
+    #bb-feedback {
+      margin-top:14px; border-radius:8px; padding:14px 16px;
+      border:1.5px solid; display:none; font-size:0.9rem;
+    }
+    #bb-feedback.correct { border-color:var(--cb-correct); background:rgba(6,214,160,0.1); color:#7af0cf; }
+    #bb-feedback.wrong   { border-color:var(--cb-wrong);   background:rgba(230,46,45,0.1); color:var(--peach); }
+    .bb-fb-title { font-weight:700; font-size:0.95rem; margin-bottom:5px; }
+    .bb-fb-answer { font-weight:600; margin-bottom:4px; font-size:0.88rem; }
+    .bb-fb-exp { font-size:0.85rem; line-height:1.55; color:var(--cb-muted); }
+
+    /* ── BOTTOM BAR ── */
+    #bb-footer {
+      height:52px; border-top:1px solid var(--cb-border);
+      display:flex; align-items:center; justify-content:space-between;
+      padding:0 24px; background:rgba(0,0,0,0.25); flex-shrink:0;
+    }
+    .bb-footer-left  { font-size:0.88rem; font-weight:700; color:var(--peach); font-family:'Space Grotesk',sans-serif; }
+    .bb-footer-center {
+      display:flex; align-items:center; gap:8px;
+    }
+    #bb-q-pill {
+      background:linear-gradient(135deg, var(--chili), var(--deep-red)); color:#fff; border-radius:20px;
+      padding:7px 18px; font-size:0.9rem; font-weight:700; cursor:pointer; box-shadow:0 4px 14px rgba(230,46,45,0.25);
+      display:flex; align-items:center; gap:7px; border:none; font-family:'Inter',sans-serif;
+    }
+    #bb-q-pill:hover { filter:brightness(1.08); }
+    .bb-footer-right { display:flex; gap:10px; }
+    .bb-nav-btn {
+      padding:9px 28px; border-radius:6px; font-size:0.9rem; font-weight:700;
+      cursor:pointer; font-family:'Inter',sans-serif; border:none; transition:all 0.15s;
+    }
+    #bb-back-btn { background:rgba(255,255,255,0.05); border:1.5px solid var(--cb-border); color:var(--text); }
+    #bb-back-btn:hover:not(:disabled) { background:var(--cb-sel); }
+    #bb-next-btn { background:linear-gradient(135deg, var(--chili), var(--deep-red)); color:#fff; box-shadow:0 4px 14px rgba(230,46,45,0.3); }
+    #bb-next-btn:hover:not(:disabled) { filter:brightness(1.08); }
+    .bb-nav-btn:disabled { opacity:0.4; cursor:not-allowed; }
+
+    /* ── MODULE BREAK OVERLAY ── */
+    #bb-break-overlay {
+      position:fixed; inset:0; background:rgba(11,1,2,0.92); backdrop-filter:blur(8px);
+      display:flex; align-items:center; justify-content:center; z-index:9999;
+    }
+    .bb-break-card {
+      background:linear-gradient(160deg, rgba(40,8,12,0.95), rgba(20,2,4,0.97));
+      border:1px solid var(--cb-border); border-radius:20px;
+      padding:52px 56px; max-width:560px; text-align:center;
+      box-shadow:0 24px 70px rgba(0,0,0,0.6);
+      backdrop-filter:blur(20px);
+    }
+    .bb-break-icon { font-size:3rem; margin-bottom:20px; }
+    .bb-break-card h2 { font-size:1.6rem; font-weight:800; color:var(--text); font-family:'Space Grotesk',sans-serif; margin-bottom:8px; }
+    .bb-break-card p { color:var(--cb-muted); font-size:0.95rem; line-height:1.6; margin-bottom:6px; }
+    .bb-break-score {
+      font-size:2.2rem; font-weight:900; color:var(--peach); font-family:'Space Grotesk',sans-serif;
+      margin:16px 0; font-variant-numeric:tabular-nums;
+    }
+    .bb-break-mod2-box {
+      background:var(--cb-sel); border:1px solid var(--cb-border);
+      border-radius:12px; padding:18px 20px; margin:20px 0; text-align:left;
+    }
+    .bb-break-mod2-box strong { display:block; color:var(--peach); font-size:1rem; margin-bottom:4px; }
+    .bb-break-mod2-box span { color:var(--cb-muted); font-size:0.88rem; }
+    .bb-break-start-btn {
+      background:linear-gradient(135deg, var(--chili), var(--deep-red)); color:#fff; border:none; border-radius:10px;
+      padding:14px 40px; font-size:1rem; font-weight:700; cursor:pointer;
+      font-family:'Inter',sans-serif; margin-top:10px;
+      box-shadow:0 8px 24px rgba(230,46,45,0.3);
+      transition:filter 0.2s, transform 0.2s;
+    }
+    .bb-break-start-btn:hover { filter:brightness(1.08); transform:translateY(-2px); }
+
+    /* ── RESULTS OVERLAY ── */
+    #bb-results-overlay {
+      position:fixed; inset:0; background:rgba(11,1,2,0.94); backdrop-filter:blur(10px);
+      display:flex; align-items:center; justify-content:center; z-index:9999;
+      overflow-y:auto; padding:40px 20px;
+    }
+    .bb-results-card {
+      background:linear-gradient(160deg, rgba(40,8,12,0.95), rgba(20,2,4,0.97));
+      border:1px solid var(--cb-border);
+      border-radius:20px; padding:48px 52px;
+      max-width:680px; width:100%; box-shadow:0 24px 70px rgba(0,0,0,0.6);
+      backdrop-filter:blur(20px);
+    }
+    .bb-results-header { text-align:center; margin-bottom:36px; }
+    .bb-results-trophy { font-size:3.5rem; margin-bottom:12px; }
+    .bb-results-header h2 { font-size:1.6rem; font-weight:800; color:var(--text); font-family:'Space Grotesk',sans-serif; margin-bottom:4px; }
+    .bb-results-header p { color:var(--cb-muted); font-size:0.9rem; }
+    .bb-score-big {
+      text-align:center; font-size:5rem; font-weight:900; color:var(--peach);
+      font-family:'Space Grotesk',sans-serif;
+      text-shadow:0 0 40px rgba(255,180,162,0.35);
+      line-height:1; margin:8px 0 4px;
+      font-variant-numeric:tabular-nums;
+    }
+    .bb-score-label { text-align:center; color:var(--cb-muted); font-size:0.9rem; margin-bottom:32px; }
+    .bb-results-modules { display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:20px; }
+    .bb-results-mod {
+      background:rgba(255,255,255,0.03); border:1px solid var(--cb-border); border-radius:14px; padding:20px;
+    }
+    .bb-results-mod-label { font-size:0.72rem; font-weight:800; letter-spacing:1.5px; text-transform:uppercase; color:var(--cb-muted); margin-bottom:6px; }
+    .bb-results-mod-title { font-weight:700; color:var(--text); font-size:0.88rem; margin-bottom:10px; }
+    .bb-results-mod-score { font-size:1.8rem; font-weight:900; color:var(--peach); font-family:'Space Grotesk',sans-serif; margin-bottom:6px; }
+    .bb-progress { height:7px; border-radius:999px; background:rgba(255,255,255,0.06); overflow:hidden; margin-top:6px; }
+    .bb-progress-fill { height:100%; border-radius:999px; background:linear-gradient(90deg, var(--peach), var(--chili)); transition:width 0.6s ease; }
+    .bb-results-grade {
+      text-align:center; font-size:1.1rem; font-weight:700;
+      color:var(--text); margin:16px 0 24px;
+      padding:12px; background:rgba(255,180,162,0.06); border-radius:10px;
+      border:1px solid var(--cb-border);
+    }
+    .bb-results-btns { display:flex; gap:12px; justify-content:center; flex-wrap:wrap; }
+    .bb-results-btn-primary {
+      background:linear-gradient(135deg, var(--chili), var(--deep-red)); color:#fff; border:none; border-radius:10px;
+      padding:12px 28px; font-size:0.95rem; font-weight:700; cursor:pointer;
+      font-family:'Inter',sans-serif; box-shadow:0 8px 24px rgba(230,46,45,0.3);
+    }
+    .bb-results-btn-secondary {
+      background:rgba(255,255,255,0.05); color:var(--text); border:1.5px solid var(--cb-border);
+      border-radius:8px; padding:12px 28px; font-size:0.95rem; font-weight:700;
+      cursor:pointer; font-family:'Inter',sans-serif; text-decoration:none;
+      display:inline-flex; align-items:center;
+    }
+    .bb-results-btn-primary:hover   { filter:brightness(1.08); transform:translateY(-2px); }
+    .bb-results-btn-secondary:hover { background:var(--cb-sel); }
+
+    /* ── QUESTION REVIEW OVERLAY ── */
+    #bb-review-overlay {
+      position:fixed; inset:0; background:rgba(0,0,0,0.5);
+      display:flex; align-items:center; justify-content:center; z-index:9998;
+    }
+    .bb-review-panel {
+      background:linear-gradient(160deg, rgba(40,8,12,0.96), rgba(20,2,4,0.98));
+      border:1px solid var(--cb-border);
+      border-radius:18px; padding:32px 36px;
+      max-width:540px; width:90%; max-height:80vh; overflow-y:auto;
+      box-shadow:0 24px 70px rgba(0,0,0,0.6); backdrop-filter:blur(20px);
+    }
+    .bb-review-panel h3 { font-size:1.1rem; font-weight:800; color:var(--text); font-family:'Space Grotesk',sans-serif; margin-bottom:6px; }
+    .bb-review-panel p  { color:var(--cb-muted); font-size:0.83rem; margin-bottom:18px; }
+    .bb-review-grid { display:flex; flex-wrap:wrap; gap:8px; margin-bottom:20px; }
+    .bb-review-item {
+      width:40px; height:40px; border-radius:8px; border:1.5px solid var(--cb-border);
+      display:flex; align-items:center; justify-content:center;
+      font-weight:700; font-size:0.85rem; cursor:pointer;
+      color:var(--text); transition:all 0.15s; background:rgba(255,255,255,0.03);
+    }
+    .bb-review-item.answered { background:linear-gradient(135deg, var(--peach), var(--chili)); border-color:var(--peach); color:#1a0204; }
+    .bb-review-item.current  { outline:3px solid var(--peach); outline-offset:2px; }
+    .bb-review-item.marked   { background:#FFD166; border-color:#FFD166; color:#1a0204; }
+    .bb-review-item:hover     { border-color:var(--cb-blue); }
+    .bb-review-legend { display:flex; gap:16px; flex-wrap:wrap; margin-bottom:20px; }
+    .bb-review-legend-item { display:flex; align-items:center; gap:6px; font-size:0.78rem; color:var(--cb-muted); }
+    .bb-legend-dot { width:12px; height:12px; border-radius:2px; }
+    .bb-review-close-btn {
+      width:100%; padding:11px; background:linear-gradient(135deg, var(--chili), var(--deep-red)); color:#fff; border:none;
+      border-radius:10px; font-size:0.95rem; font-weight:700; cursor:pointer;
+      font-family:'Inter',sans-serif; box-shadow:0 8px 24px rgba(230,46,45,0.3);
+    }
+
+    /* ── SCROLLBARS ── */
+    #bb-left::-webkit-scrollbar,
+    #bb-right::-webkit-scrollbar { width:6px; }
+    #bb-left::-webkit-scrollbar-thumb,
+    #bb-right::-webkit-scrollbar-thumb { background:rgba(255,180,162,0.3); border-radius:3px; }
+
+    /* ── DIRECTIONS TOOLTIP ── */
+    #bb-directions-panel {
+      position:absolute; top:58px; left:16px; z-index:999;
+      background:linear-gradient(160deg, rgba(40,8,12,0.97), rgba(20,2,4,0.98)); border:1px solid var(--cb-border); border-radius:12px;
+      padding:18px 20px; max-width:360px; box-shadow:0 16px 50px rgba(0,0,0,0.6); backdrop-filter:blur(20px);
+      font-size:0.88rem; line-height:1.6; color:var(--cb-text);
+    }
+    #bb-directions-panel h4 { font-size:0.95rem; font-weight:700; margin-bottom:8px; color:var(--peach); }
+    #bb-directions-panel .close { float:right; cursor:pointer; color:var(--cb-muted); font-size:1.1rem; }
+
+    /* Responsive */
+    @media(max-width:760px){
+      #bb-body { flex-direction:column; }
+      #bb-left  { border-right:none; border-bottom:1px solid var(--cb-border); max-height:40vh; }
+      #bb-divider { display:none; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════
+     TOP HEADER
+═══════════════════════════════ -->
+<div id="bb-header">
+  <div class="bb-header-left">
+    <span class="bb-section-title" id="bb-section-title">Section 1, Module 1: Reading and Writing</span>
+    <span class="bb-directions" onclick="toggleDirections()">
+      Directions
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><polyline points="4 6 8 10 12 6"/></svg>
+    </span>
+  </div>
+
+  <div class="bb-header-center">
+    <div id="bb-timer">32:00</div>
+    <button id="bb-hide-timer" onclick="toggleTimer()">Hide</button>
+  </div>
+
+  <div class="bb-header-right">
+    <!-- Annotate icon -->
+    <div class="bb-header-icon" title="Annotate">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+      <span>Annotate</span>
+    </div>
+    <!-- More icon -->
+    <div class="bb-header-icon" title="More options">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/></svg>
+      <span>More</span>
+    </div>
+  </div>
+
+  <!-- Directions dropdown -->
+  <div id="bb-directions-panel" style="display:none;">
+    <span class="close" onclick="toggleDirections()">✕</span>
+    <h4>Directions</h4>
+    <div id="bb-directions-text">
+      The questions in this section address a number of important reading and writing skills. Each question includes one or more passages, which may include a table or graph. Read each passage and question carefully, and then choose the best answer to the question based on the passage(s). All questions in this section are multiple choice with four answer choices. Each question has a single best answer.
+    </div>
+  </div>
+</div>
+
+<!-- Progress dot strip -->
+<div id="bb-dotstrip"></div>
+
+<!-- ═══════════════════════════════
+     MAIN BODY — split panes
+═══════════════════════════════ -->
+<div id="bb-body">
+
+  <!-- LEFT: Passage -->
+  <div id="bb-left">
+    <div class="bb-pane-icons">
+      <div class="bb-pane-icon" title="Expand" onclick="expandPane('left')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg>
+      </div>
+    </div>
+    <div id="bb-passage-content"></div>
+  </div>
+
+  <div id="bb-divider"></div>
+
+  <!-- RIGHT: Question -->
+  <div id="bb-right">
+    <div class="bb-pane-icons">
+      <div class="bb-pane-icon" title="Expand" onclick="expandPane('right')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg>
+      </div>
+    </div>
+
+    <div id="bb-q-header">
+      <div class="bb-qnum" id="bb-qnum">1</div>
+      <button id="bb-mark-btn" onclick="toggleMark()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 012-2h10a2 2 0 012 2z"/></svg>
+        Mark for Review
+      </button>
+      <div class="bb-abc-btn" title="Strikethrough mode">ABC</div>
+    </div>
+
+    <div id="bb-q-body">
+      <div id="bb-question-stem"></div>
+      <div id="bb-options"></div>
+      <div id="bb-feedback"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════
+     BOTTOM FOOTER
+═══════════════════════════════ -->
+<div id="bb-footer">
+  <div class="bb-footer-left" id="bb-footer-name">PeakSAT</div>
+  <div class="bb-footer-center">
+    <button id="bb-q-pill" onclick="openReview()">
+      <span id="bb-q-pill-text">Question 1 of 27</span>
+      <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="white" stroke-width="2.5"><polyline points="4 6 8 10 12 6"/></svg>
+    </button>
+  </div>
+  <div class="bb-footer-right">
+    <button class="bb-nav-btn" id="bb-back-btn" onclick="goBack()" disabled>Back</button>
+    <button class="bb-nav-btn" id="bb-next-btn" onclick="goNext()">Next</button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════
+     OVERLAYS
+═══════════════════════════════ -->
+<!-- Module break -->
+<div id="bb-break-overlay" style="display:none;">
+  <div class="bb-break-card">
+    <div class="bb-break-icon">⏸️</div>
+    <h2>Module 1 Complete</h2>
+    <p>Your Module 1 score:</p>
+    <div class="bb-break-score" id="bb-break-score-val">—</div>
+    <p style="font-size:0.83rem; color:var(--muted);">On the real SAT, Module 2 difficulty adapts based on your Module 1 performance.</p>
+    <div class="bb-break-mod2-box">
+      <strong id="bb-break-mod2-title">Module 2</strong>
+      <span id="bb-break-mod2-desc">Loading…</span>
+      <div style="margin-top:8px; color:var(--peach); font-weight:600; font-size:0.85rem;" id="bb-break-mod2-meta"></div>
+    </div>
+    <button class="bb-break-start-btn" onclick="startModule2()">Start Module 2 →</button>
+  </div>
+</div>
+
+<!-- Results -->
+<div id="bb-results-overlay" style="display:none;">
+  <div class="bb-results-card">
+    <div class="bb-results-header">
+      <div class="bb-results-trophy">🏆</div>
+      <h2 id="bb-results-test-name">Practice Test Complete</h2>
+      <p>Here's how you did across both modules.</p>
+    </div>
+    <div class="bb-score-big" id="bb-results-scaled">—</div>
+    <div class="bb-score-label">Estimated section score (out of 800)</div>
+    <div class="bb-results-modules">
+      <div class="bb-results-mod">
+        <div class="bb-results-mod-label">Module 1</div>
+        <div class="bb-results-mod-title" id="bb-res-m1-title">—</div>
+        <div class="bb-results-mod-score" id="bb-res-m1-score">—</div>
+        <div class="bb-progress"><div class="bb-progress-fill" id="bb-res-m1-bar" style="width:0%"></div></div>
+        <div style="font-size:0.8rem; color:var(--muted); margin-top:4px;" id="bb-res-m1-pct">—</div>
+      </div>
+      <div class="bb-results-mod">
+        <div class="bb-results-mod-label">Module 2</div>
+        <div class="bb-results-mod-title" id="bb-res-m2-title">—</div>
+        <div class="bb-results-mod-score" id="bb-res-m2-score">—</div>
+        <div class="bb-progress"><div class="bb-progress-fill" id="bb-res-m2-bar" style="width:0%"></div></div>
+        <div style="font-size:0.8rem; color:var(--muted); margin-top:4px;" id="bb-res-m2-pct">—</div>
+      </div>
+    </div>
+    <div class="bb-results-grade" id="bb-results-grade">—</div>
+    <div id="bb-results-save-note" style="text-align:center; font-size:0.82rem; color:var(--muted); margin:-8px 0 18px;"></div>
+    <div class="bb-results-btns">
+      <button class="bb-results-btn-primary" onclick="restartTest()">Try Another Test</button>
+      <a href="javascript:window.close()" class="bb-results-btn-secondary">Close Tab</a>
+    </div>
+  </div>
+</div>
+
+<!-- Review panel -->
+<div id="bb-review-overlay" style="display:none;" onclick="closeReview(event)">
+  <div class="bb-review-panel" onclick="event.stopPropagation()">
+    <h3>Question Overview</h3>
+    <p>Click a question number to jump to it.</p>
+    <div class="bb-review-legend">
+      <div class="bb-review-legend-item"><div class="bb-legend-dot" style="background:var(--peach)"></div>Answered</div>
+      <div class="bb-review-legend-item"><div class="bb-legend-dot" style="background:rgba(255,180,162,0.18); border:1px solid var(--cb-border)"></div>Unanswered</div>
+      <div class="bb-review-legend-item"><div class="bb-legend-dot" style="background:#FFD166"></div>Marked for Review</div>
+    </div>
+    <div class="bb-review-grid" id="bb-review-grid"></div>
+    <button class="bb-review-close-btn" onclick="closeReview()">Close</button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════
+     ENGINE SCRIPT
+═══════════════════════════════ -->
+<script>
+// ─────────────────────────────────────────────
+//  TEST DEFINITIONS  (same question pools)
+// ─────────────────────────────────────────────
+const MATH_TESTS = [
+  { id:"math-1", label:"Math Practice Test 1", subject:"math",
+    modules:[
+      { number:1, title:"Module 1 — Foundations", desc:"Algebra, problem solving, core geometry.", timeSeconds:35*60,
+        qIds:["m-e-01","m-e-02","m-e-03","m-e-04","m-e-05","m-e-06","m-e-07","m-e-08","m-e-09","m-e-10",
+              "m-m-11","m-m-12","m-m-13","m-m-14","m-m-15","m-m-16","m-m-17","m-m-18","m-m-19","m-m-20","m-h-21","m-h-22"] },
+      { number:2, title:"Module 2 — Advanced",   desc:"Advanced math, complex expressions, multi-step reasoning.", timeSeconds:35*60,
+        qIds:["m-h-23","m-h-24","m-h-25","m-h-26","m-h-27","m-h-28","m-h-29","m-h-30","m-h-31","m-h-32",
+              "m-h-33","m-h-34","m-h-35","m-h-36","m-h-37","m-h-38","m-h-39","m-h-40","m-e-01","m-e-02","m-m-11","m-m-12"] }
+    ]
+  },
+  { id:"math-2", label:"Math Practice Test 2", subject:"math",
+    modules:[
+      { number:1, title:"Module 1 — Core Skills", desc:"Equations, ratios, data analysis, geometry.", timeSeconds:35*60,
+        qIds:["m-e-03","m-e-04","m-e-05","m-e-06","m-e-07","m-e-08","m-e-09","m-e-10","m-e-01","m-e-02",
+              "m-m-13","m-m-14","m-m-15","m-m-16","m-m-17","m-m-18","m-m-19","m-m-20","m-m-11","m-m-12","m-h-21","m-h-22"] },
+      { number:2, title:"Module 2 — Passport to Advanced", desc:"Rational expressions, exponents, trig.", timeSeconds:35*60,
+        qIds:["m-h-25","m-h-26","m-h-27","m-h-28","m-h-29","m-h-30","m-h-31","m-h-32","m-h-33","m-h-34",
+              "m-h-35","m-h-36","m-h-37","m-h-38","m-h-39","m-h-40","m-h-23","m-h-24","m-e-05","m-e-06","m-m-15","m-m-16"] }
+    ]
+  },
+  { id:"math-3", label:"Math Practice Test 3", subject:"math",
+    modules:[
+      { number:1, title:"Module 1 — Mixed Challenge", desc:"Balanced algebra, word problems, geometry.", timeSeconds:35*60,
+        qIds:["m-e-02","m-e-04","m-e-06","m-e-08","m-e-10","m-e-01","m-e-03","m-e-05","m-e-07","m-e-09",
+              "m-m-12","m-m-14","m-m-16","m-m-18","m-m-20","m-m-11","m-m-13","m-m-15","m-m-17","m-m-19","m-h-40","m-h-39"] },
+      { number:2, title:"Module 2 — Elite Difficulty", desc:"Complex numbers, exponentials, circles.", timeSeconds:35*60,
+        qIds:["m-h-21","m-h-22","m-h-23","m-h-24","m-h-25","m-h-26","m-h-27","m-h-28","m-h-29","m-h-30",
+              "m-h-31","m-h-32","m-h-33","m-h-34","m-h-35","m-h-36","m-h-37","m-h-38","m-e-07","m-e-08","m-m-17","m-m-18"] }
+    ]
+  }
+];
+
+const ENGLISH_TESTS = [
+  { id:"english-1", label:"Reading & Writing Practice Test 1", subject:"english",
+    modules:[
+      { number:1, title:"Module 1 — Core Comprehension", desc:"Vocabulary, main ideas, grammar, punctuation.", timeSeconds:32*60,
+        qIds:["e-e-01","e-e-02","e-e-03","e-e-04","e-e-05","e-e-06","e-e-07","e-e-08","e-e-09","e-e-10",
+              "e-m-11","e-m-12","e-m-13","e-m-14","e-m-15","e-m-16","e-m-17","e-m-18","e-m-19","e-m-20",
+              "e-h-21","e-h-22","e-h-23","e-h-24","e-h-25","e-h-26","e-h-27"] },
+      { number:2, title:"Module 2 — Advanced Analysis", desc:"Rhetorical analysis, argument structure, advanced conventions.", timeSeconds:32*60,
+        qIds:["e-h-28","e-h-29","e-h-30","e-h-31","e-h-32","e-h-33","e-h-34","e-h-35","e-h-36","e-h-37",
+              "e-h-38","e-h-39","e-h-40","e-e-01","e-e-02","e-e-03","e-e-04","e-m-11","e-m-12","e-m-13",
+              "e-m-14","e-m-15","e-m-16","e-m-17","e-m-18","e-h-21","e-h-22"] }
+    ]
+  },
+  { id:"english-2", label:"Reading & Writing Practice Test 2", subject:"english",
+    modules:[
+      { number:1, title:"Module 1 — Craft & Structure", desc:"Author purpose, tone, text structure, evidence-based reading.", timeSeconds:32*60,
+        qIds:["e-e-05","e-e-06","e-e-07","e-e-08","e-e-09","e-e-10","e-e-01","e-e-02","e-e-03","e-e-04",
+              "e-m-13","e-m-14","e-m-15","e-m-16","e-m-17","e-m-18","e-m-19","e-m-20","e-m-11","e-m-12",
+              "e-h-23","e-h-24","e-h-25","e-h-26","e-h-27","e-h-28","e-h-29"] },
+      { number:2, title:"Module 2 — Expression & Conventions", desc:"Transitions, sentence structure, advanced grammar.", timeSeconds:32*60,
+        qIds:["e-h-30","e-h-31","e-h-32","e-h-33","e-h-34","e-h-35","e-h-36","e-h-37","e-h-38","e-h-39",
+              "e-h-40","e-h-21","e-h-22","e-h-23","e-e-07","e-e-08","e-e-09","e-e-10","e-m-19","e-m-20",
+              "e-m-15","e-m-16","e-m-17","e-m-18","e-m-11","e-h-24","e-h-25"] }
+    ]
+  },
+  { id:"english-3", label:"Reading & Writing Practice Test 3", subject:"english",
+    modules:[
+      { number:1, title:"Module 1 — Information & Ideas", desc:"Inference, data interpretation, central ideas.", timeSeconds:32*60,
+        qIds:["e-e-02","e-e-04","e-e-06","e-e-08","e-e-10","e-e-01","e-e-03","e-e-05","e-e-07","e-e-09",
+              "e-m-12","e-m-14","e-m-16","e-m-18","e-m-20","e-m-11","e-m-13","e-m-15","e-m-17","e-m-19",
+              "e-h-40","e-h-39","e-h-38","e-h-37","e-h-36","e-h-35","e-h-34"] },
+      { number:2, title:"Module 2 — Full Spectrum", desc:"Complete SAT RW skillset, hardest questions.", timeSeconds:32*60,
+        qIds:["e-h-21","e-h-22","e-h-23","e-h-24","e-h-25","e-h-26","e-h-27","e-h-28","e-h-29","e-h-30",
+              "e-h-31","e-h-32","e-h-33","e-e-05","e-e-06","e-e-07","e-e-08","e-m-11","e-m-12","e-m-13",
+              "e-m-14","e-m-15","e-m-16","e-m-17","e-m-18","e-h-36","e-h-37"] }
+    ]
+  }
+];
+
+// ─────────────────────────────────────────────
+//  STATE
+// ─────────────────────────────────────────────
+let db          = [];       // full question DB (loaded from URL param)
+let testDef     = null;
+let modIndex    = 0;
+let questions   = [];       // resolved Q objects for current module
+let qIndex      = 0;
+let answers     = [];       // per-question: { chosen, isCorrect, marked }
+let marked      = [];       // booleans per question index
+let mod1Score   = 0;
+let mod1Records = [];       // [{ topic, isCorrect }] captured at end of module 1
+let timerInt    = null;
+let timeLeft    = 0;
+let timerHidden = false;
+let answered    = false;    // has current question been answered?
+
+// ─────────────────────────────────────────────
+//  BOOT — read URL params, load DB, start test
+// ─────────────────────────────────────────────
+window.addEventListener("DOMContentLoaded", async () => {
+  const params  = new URLSearchParams(location.search);
+  const testId  = params.get("test");
+  const subject = params.get("subject") || "english";
+
+  const allTests = subject === "math" ? MATH_TESTS : ENGLISH_TESTS;
+  testDef = allTests.find(t => t.id === testId) || allTests[0];
+
+  // Load question DB from sibling JSON file
+  const file = subject === "math" ? "math-questions.json" : "english-questions.json";
+  try {
+    const res = await fetch(file);
+    db = await res.json();
+  } catch(e) {
+    document.body.innerHTML = `<div style="padding:60px;font-family:sans-serif;text-align:center;">
+      <h2>Could not load questions.</h2>
+      <p>Make sure bluebook.html is in the same folder as your JSON files.</p></div>`;
+    return;
+  }
+
+  // Update directions text
+  if (subject === "math") {
+    document.getElementById("bb-directions-text").textContent =
+      "The questions in this section cover a range of math topics. For most questions, you will need to solve the problem and choose the best answer from the four choices. Some questions have no answer choices — for those, enter your answer directly. Calculator use is permitted.";
+  }
+
+  startModule(0);
+});
+
+// ─────────────────────────────────────────────
+//  MODULE START
+// ─────────────────────────────────────────────
+function startModule(idx) {
+  modIndex  = idx;
+  qIndex    = 0;
+  answered  = false;
+  answers   = [];
+  const mod = testDef.modules[idx];
+  questions = resolveQs(mod.qIds);
+  marked    = new Array(questions.length).fill(false);
+  timeLeft  = mod.timeSeconds;
+
+  // Header title
+  const subjectLabel = testDef.subject === "math" ? "Math" : "Reading and Writing";
+  document.getElementById("bb-section-title").textContent =
+    `Section ${idx+1}, Module ${mod.number}: ${subjectLabel}`;
+  document.getElementById("bb-footer-name").textContent = "PeakSAT";
+
+  buildDotStrip();
+  renderQuestion();
+  startTimer();
+}
+
+function resolveQs(ids) {
+  return ids.map(id => db.find(q => q.id === id)).filter(Boolean);
+}
+
+// ─────────────────────────────────────────────
+//  RENDER QUESTION
+// ─────────────────────────────────────────────
+function renderQuestion() {
+  const q = questions[qIndex];
+  if (!q) { finishModule(); return; }
+  answered = !!answers[qIndex];
+
+  // Passage pane — only shown when THIS question carries its own passage
+  // (English only; math questions never have one). When absent, the left
+  // pane and divider collapse so the question gets the full width.
+  const passageEl = document.getElementById("bb-passage-content");
+  const leftPane  = document.getElementById("bb-left");
+  const divider   = document.getElementById("bb-divider");
+  const body      = document.getElementById("bb-body");
+  if (q.passage) {
+    passageEl.innerHTML = `<div class="bb-passage-body">${escH(q.passage).replace(/\n/g,"<br>")}</div>`;
+    leftPane.style.display = "flex";
+    leftPane.style.flexDirection = "column";
+    divider.style.display  = "block";
+    leftPane.style.flex    = "1";
+    leftPane.style.width   = "";
+    document.getElementById("bb-right").style.flex = "1";
+    body.classList.remove("bb-single-pane");
+  } else {
+    passageEl.innerHTML = "";
+    leftPane.style.display = "none";
+    divider.style.display  = "none";
+    document.getElementById("bb-right").style.flex = "1";
+    body.classList.add("bb-single-pane");
+  }
+
+  // Q number badge
+  document.getElementById("bb-qnum").textContent = qIndex + 1;
+
+  // Mark for review button
+  const markBtn = document.getElementById("bb-mark-btn");
+  markBtn.className = marked[qIndex] ? "marked" : "";
+
+  // Question stem
+  document.getElementById("bb-question-stem").innerHTML = escH(q.question).replace(/\n/g,"<br>");
+
+  // Options
+  const optEl = document.getElementById("bb-options");
+  const savedChoice = answers[qIndex]?.chosen;
+  optEl.innerHTML = q.options.map((opt, i) => {
+    let cls = "bb-option";
+    if (answered) {
+      cls += " disabled";
+      if (i === q.correctAnswer) cls += " correct";
+      else if (i === savedChoice && i !== q.correctAnswer) cls += " wrong";
+    } else if (savedChoice === i) {
+      cls += " selected";
+    }
+    return `<div class="${cls}" data-idx="${i}" onclick="selectOption(${i})">
+      <div class="bb-opt-circle">${String.fromCharCode(65+i)}</div>
+      <div class="bb-opt-text">${escH(opt)}</div>
+    </div>`;
+  }).join("");
+
+  // Feedback
+  const fb = document.getElementById("bb-feedback");
+  if (answered && answers[qIndex]) {
+    const a = answers[qIndex];
+    fb.style.display = "block";
+    fb.className = a.isCorrect ? "correct" : "wrong";
+    const correctDisplay = `${String.fromCharCode(65+q.correctAnswer)}. ${escH(q.options[q.correctAnswer])}`;
+    fb.innerHTML = `
+      <div class="bb-fb-title">${a.isCorrect ? "✅ Correct!" : "❌ Incorrect"}</div>
+      <div class="bb-fb-answer">Correct answer: ${correctDisplay}</div>
+      <div class="bb-fb-exp">${escH(q.explanation)}</div>`;
+  } else {
+    fb.style.display = "none";
+    fb.innerHTML = "";
+  }
+
+  // Pill + nav buttons
+  document.getElementById("bb-q-pill-text").textContent = `Question ${qIndex+1} of ${questions.length}`;
+  document.getElementById("bb-back-btn").disabled = qIndex === 0 && modIndex === 0;
+  const isLast = qIndex + 1 >= questions.length;
+  const isLastMod = modIndex + 1 >= testDef.modules.length;
+  document.getElementById("bb-next-btn").textContent = isLast ? (isLastMod ? "Finish" : "End Module") : "Next";
+
+  updateDotStrip();
+
+  // Scroll right pane back to top
+  document.getElementById("bb-right").scrollTop = 0;
+  document.getElementById("bb-left").scrollTop  = 0;
+}
+
+// ─────────────────────────────────────────────
+//  SELECT OPTION
+// ─────────────────────────────────────────────
+function selectOption(idx) {
+  if (answered) return;
+  answered = true;
+  const q = questions[qIndex];
+  const isCorrect = idx === q.correctAnswer;
+  answers[qIndex] = { chosen: idx, isCorrect };
+
+  // Re-render to show feedback + highlight
+  renderQuestion();
+  updateDotStrip();
+}
+
+// ─────────────────────────────────────────────
+//  NAVIGATION
+// ─────────────────────────────────────────────
+function goNext() {
+  if (qIndex + 1 < questions.length) {
+    qIndex++;
+    answered = !!answers[qIndex];
+    renderQuestion();
+  } else {
+    finishModule();
+  }
+}
+
+function goBack() {
+  if (qIndex > 0) {
+    qIndex--;
+    answered = !!answers[qIndex];
+    renderQuestion();
+  }
+}
+
+// ─────────────────────────────────────────────
+//  MARK FOR REVIEW
+// ─────────────────────────────────────────────
+function toggleMark() {
+  marked[qIndex] = !marked[qIndex];
+  const btn = document.getElementById("bb-mark-btn");
+  btn.className = marked[qIndex] ? "marked" : "";
+  updateDotStrip();
+}
+
+// ─────────────────────────────────────────────
+//  DOT STRIP
+// ─────────────────────────────────────────────
+function buildDotStrip() {
+  const strip = document.getElementById("bb-dotstrip");
+  strip.innerHTML = questions.map((_,i) =>
+    `<div class="bb-dot" id="dot-${i}" title="Q${i+1}" onclick="jumpTo(${i})"></div>`
+  ).join("");
+}
+
+function updateDotStrip() {
+  questions.forEach((_,i) => {
+    const dot = document.getElementById(`dot-${i}`);
+    if (!dot) return;
+    dot.className = "bb-dot";
+    if (i === qIndex)         dot.classList.add("current");
+    else if (marked[i])       dot.classList.add("marked");
+    else if (answers[i])      dot.classList.add("answered");
+  });
+}
+
+function jumpTo(i) {
+  qIndex   = i;
+  answered = !!answers[i];
+  renderQuestion();
+}
+
+// ─────────────────────────────────────────────
+//  TIMER
+// ─────────────────────────────────────────────
+function startTimer() {
+  clearInterval(timerInt);
+  renderTimer();
+  timerInt = setInterval(() => {
+    timeLeft--;
+    renderTimer();
+    if (timeLeft <= 0) { clearInterval(timerInt); timeUp(); }
+  }, 1000);
+}
+
+function renderTimer() {
+  const el = document.getElementById("bb-timer");
+  if (timerHidden) { el.textContent = "Hide"; return; }
+  const m  = Math.floor(timeLeft / 60);
+  const s  = String(timeLeft % 60).padStart(2,"0");
+  el.textContent = `${m}:${s}`;
+  el.className   = timeLeft <= 120 ? "urgent" : timeLeft <= 300 ? "warn" : "";
+}
+
+function toggleTimer() {
+  timerHidden = !timerHidden;
+  const el  = document.getElementById("bb-timer");
+  const btn = document.getElementById("bb-hide-timer");
+  if (timerHidden) { el.textContent = "--:--"; el.className = ""; btn.textContent = "Show"; }
+  else             { renderTimer(); btn.textContent = "Hide"; }
+}
+
+function timeUp() {
+  // Mark all remaining as unanswered (wrong)
+  for (let i = qIndex; i < questions.length; i++) {
+    if (!answers[i]) answers[i] = { chosen:-1, isCorrect:false, timeout:true };
+  }
+  finishModule();
+}
+
+// ─────────────────────────────────────────────
+//  MODULE FINISH
+// ─────────────────────────────────────────────
+function moduleRecords() {
+  // Pair each resolved question with its answer to capture topic + correctness.
+  return questions.map((q, i) => ({
+    topic: q?.topic || "General",
+    isCorrect: !!(answers[i] && answers[i].isCorrect)
+  }));
+}
+
+function finishModule() {
+  clearInterval(timerInt);
+  const score = answers.filter(a=>a&&a.isCorrect).length;
+
+  if (modIndex === 0) {
+    mod1Score = score;
+    mod1Records = moduleRecords();
+    showBreak(score);
+  } else {
+    showResults(score);
+  }
+}
+
+function showBreak(score) {
+  const total = questions.length;
+  const pct   = Math.round(score/total*100);
+  document.getElementById("bb-break-score-val").textContent = `${score} / ${total} (${pct}%)`;
+  const mod2 = testDef.modules[1];
+  document.getElementById("bb-break-mod2-title").textContent = mod2.title;
+  document.getElementById("bb-break-mod2-desc").textContent  = mod2.desc;
+  document.getElementById("bb-break-mod2-meta").textContent  = `⏱ ${Math.round(mod2.timeSeconds/60)} min · ${mod2.qIds.length} questions`;
+  document.getElementById("bb-break-overlay").style.display  = "flex";
+}
+
+function startModule2() {
+  document.getElementById("bb-break-overlay").style.display = "none";
+  const mod2Questions = resolveQs(testDef.modules[1].qIds);
+  // Save mod1 answers aside
+  const savedMod1 = [...answers];
+  startModule(1);
+  // Restore mod1Score
+  mod1Score = savedMod1.filter(a=>a&&a.isCorrect).length;
+}
+
+function showResults(mod2Score) {
+  const mod1Q = testDef.modules[0].qIds.length;
+  const mod2Q = testDef.modules[1].qIds.length;
+  const total = mod1Q + mod2Q;
+  const totalScore = mod1Score + mod2Score;
+  const pct = Math.round(totalScore/total*100);
+  const scaled = Math.round(200 + (pct/100)*600);
+  const grade = pct>=90?"🏆 Elite — Outstanding":pct>=78?"⭐ Strong Performance":pct>=62?"📈 Good Progress":"📚 Keep Practicing";
+
+  document.getElementById("bb-results-test-name").textContent = testDef.label;
+  document.getElementById("bb-results-scaled").textContent    = `~${scaled}`;
+  document.getElementById("bb-results-grade").textContent     = grade;
+
+  const m1t = testDef.modules[0].title;
+  const m2t = testDef.modules[1].title;
+  const m1pct = Math.round(mod1Score/mod1Q*100);
+  const m2pct = Math.round(mod2Score/mod2Q*100);
+
+  document.getElementById("bb-res-m1-title").textContent = m1t;
+  document.getElementById("bb-res-m1-score").textContent = `${mod1Score} / ${mod1Q}`;
+  document.getElementById("bb-res-m1-bar").style.width   = m1pct+"%";
+  document.getElementById("bb-res-m1-pct").textContent   = m1pct+"% correct";
+
+  document.getElementById("bb-res-m2-title").textContent = m2t;
+  document.getElementById("bb-res-m2-score").textContent = `${mod2Score} / ${mod2Q}`;
+  document.getElementById("bb-res-m2-bar").style.width   = m2pct+"%";
+  document.getElementById("bb-res-m2-pct").textContent   = m2pct+"% correct";
+
+  document.getElementById("bb-results-overlay").style.display = "flex";
+
+  // Persist the full test result to Firebase (if the data bridge is signed in).
+  const records = mod1Records.concat(moduleRecords());
+  if (window.PeakSATData && window.PeakSATData.isSignedIn()) {
+    const note = document.getElementById("bb-results-save-note");
+    if (note) note.textContent = "💾 Saving your result…";
+    window.PeakSATData.savePracticeTest({
+      testId: testDef.id,
+      label: testDef.label,
+      subject: testDef.subject,
+      mod1: { score: mod1Score, total: mod1Q },
+      mod2: { score: mod2Score, total: mod2Q },
+      scaledScore: scaled,
+      records
+    }).then(() => {
+      const n = document.getElementById("bb-results-save-note");
+      if (n) n.innerHTML = "✅ Saved to your PeakSAT account.";
+    }).catch(() => {
+      const n = document.getElementById("bb-results-save-note");
+      if (n) n.textContent = "⚠️ Could not save this result.";
+    });
+  } else {
+    const note = document.getElementById("bb-results-save-note");
+    if (note) note.innerHTML = "Sign in on PeakSAT to save results to your dashboard.";
+  }
+}
+
+function restartTest() {
+  document.getElementById("bb-results-overlay").style.display = "none";
+  startModule(0);
+}
+
+// ─────────────────────────────────────────────
+//  REVIEW OVERLAY
+// ─────────────────────────────────────────────
+function openReview() {
+  const grid = document.getElementById("bb-review-grid");
+  grid.innerHTML = questions.map((_,i) => {
+    let cls = "bb-review-item";
+    if (answers[i]) cls += " answered";
+    if (marked[i])  cls += " marked";
+    if (i===qIndex) cls += " current";
+    return `<div class="${cls}" onclick="jumpFromReview(${i})">${i+1}</div>`;
+  }).join("");
+  document.getElementById("bb-review-overlay").style.display = "flex";
+}
+
+function jumpFromReview(i) {
+  closeReview();
+  jumpTo(i);
+}
+
+function closeReview(e) {
+  if (!e || e.target === document.getElementById("bb-review-overlay"))
+    document.getElementById("bb-review-overlay").style.display = "none";
+}
+
+// ─────────────────────────────────────────────
+//  EXPAND PANE
+// ─────────────────────────────────────────────
+function expandPane(side) {
+  const left    = document.getElementById("bb-left");
+  const right   = document.getElementById("bb-right");
+  const divider = document.getElementById("bb-divider");
+  if (side === "left") {
+    const expanded = left.style.flex === "2";
+    left.style.flex    = expanded ? "1" : "2";
+    right.style.flex   = expanded ? "1" : "0.5";
+  } else {
+    const expanded = right.style.flex === "2";
+    right.style.flex = expanded ? "1" : "2";
+    left.style.flex  = expanded ? "1" : "0.5";
+  }
+}
+
+// ─────────────────────────────────────────────
+//  DIRECTIONS PANEL
+// ─────────────────────────────────────────────
+function toggleDirections() {
+  const p = document.getElementById("bb-directions-panel");
+  p.style.display = p.style.display === "none" ? "block" : "none";
+}
+
+// ─────────────────────────────────────────────
+//  DRAG-TO-RESIZE DIVIDER
+// ─────────────────────────────────────────────
+(function() {
+  const divider = document.getElementById("bb-divider");
+  let dragging  = false;
+  divider.addEventListener("mousedown", e => { dragging = true; e.preventDefault(); });
+  document.addEventListener("mousemove", e => {
+    if (!dragging) return;
+    const body  = document.getElementById("bb-body");
+    const rect  = body.getBoundingClientRect();
+    const left  = e.clientX - rect.left;
+    const total = rect.width;
+    const pct   = Math.min(Math.max(left/total*100, 20), 80);
+    document.getElementById("bb-left").style.flex  = "none";
+    document.getElementById("bb-left").style.width = pct+"%";
+    document.getElementById("bb-right").style.flex = "1";
+  });
+  document.addEventListener("mouseup", () => { dragging = false; });
+})();
+
+// ─────────────────────────────────────────────
+//  KEYBOARD SHORTCUTS
+// ─────────────────────────────────────────────
+document.addEventListener("keydown", e => {
+  if (e.key === "ArrowRight" || e.key === "Enter") { if (!answered) return; goNext(); }
+  if (e.key === "ArrowLeft")  goBack();
+  if (e.key === "1") selectOption(0);
+  if (e.key === "2") selectOption(1);
+  if (e.key === "3") selectOption(2);
+  if (e.key === "4") selectOption(3);
+  if (e.key === "m" || e.key === "M") toggleMark();
+});
+
+// ─────────────────────────────────────────────
+//  UTILS
+// ─────────────────────────────────────────────
+function escH(t) {
+  if (t==null) return "";
+  const d = document.createElement("div");
+  d.textContent = t;
+  return d.innerHTML;
+}
+</script>
+
+<!-- Firebase data bridge: exposes window.PeakSATData for the bluebook engine -->
+<script type="module">
+  import { savePracticeTest, fbAuth } from "./peaksat-data.js";
+  window.PeakSATData = {
+    isSignedIn: () => !!fbAuth.currentUser,
+    savePracticeTest
+  };
+</script>
+</body>
+</html>

@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PeakSAT | Math</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    /* ── PRACTICE TEST CARDS ── */
+    .pt-cards-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:22px; }
+    .pt-card { padding:28px; display:flex; flex-direction:column; gap:14px; }
+    .pt-card-header { display:flex; justify-content:space-between; align-items:center; }
+    .pt-badge { padding:5px 13px; border-radius:999px; font-size:0.78rem; font-weight:800; font-family:"Space Grotesk",sans-serif; text-transform:uppercase; letter-spacing:0.8px; }
+    .pt-badge-1 { background:rgba(6,214,160,0.12); border:1px solid rgba(6,214,160,0.3); color:#06D6A0; }
+    .pt-badge-2 { background:rgba(255,209,102,0.12); border:1px solid rgba(255,209,102,0.3); color:#FFD166; }
+    .pt-badge-3 { background:rgba(230,46,45,0.12); border:1px solid rgba(230,46,45,0.3); color:#E62E2D; }
+    .pt-test-num { font-size:0.85rem; font-weight:700; color:var(--muted); font-family:"Space Grotesk",sans-serif; }
+    .pt-card h3 { font-size:1rem; line-height:1.4; margin:0; }
+    .pt-card p  { color:var(--muted); font-size:0.88rem; line-height:1.6; flex:1; }
+    .pt-modules { display:flex; flex-direction:column; gap:8px; }
+    .pt-module-row { display:flex; gap:8px; align-items:flex-start; }
+    .pt-module-dot { width:7px; height:7px; border-radius:50%; background:var(--peach); flex-shrink:0; margin-top:5px; }
+    .pt-module-row strong { font-size:0.8rem; color:var(--text); display:block; margin-bottom:1px; }
+    .pt-module-row span   { font-size:0.76rem; color:var(--muted); }
+    .pt-meta { display:flex; gap:8px; flex-wrap:wrap; padding-top:12px; border-top:1px solid var(--line); }
+    .pt-meta span { font-size:0.78rem; color:var(--muted); font-weight:600; }
+    .pt-start-btn { width:100%; margin-top:4px; }
+    @media(max-width:1080px){ .pt-cards-grid{ grid-template-columns:1fr; } }
+  </style>
+</head>
+<body data-page="math">
+  <div class="page-enter"></div>
+  <div class="ambient ambient-1"></div>
+  <div class="ambient ambient-2"></div>
+  <div class="ambient ambient-3"></div>
+  <div class="mesh-overlay"></div>
+  <div id="site-nav"></div>
+
+  <main class="page-main container">
+    <section class="page-hero reveal">
+      <div class="page-hero-text">
+        <p class="eyebrow">MATH DOMINATION</p>
+        <h1>Stop doing Algebra. Start graphing.</h1>
+        <p>The Digital SAT includes Desmos. If you are doing long division, you are doing it wrong. Master the structure and setup before jumping into the tests.</p>
+      </div>
+    </section>
+
+    <section class="section reveal">
+      <div class="feature-grid guide-wide">
+        <article class="feature-card tilt-card">
+          <div class="feature-badge">01</div>
+          <h3>Algebra</h3>
+          <p>Linear equations, systems, inequalities, and variable relationships.</p>
+        </article>
+        <article class="feature-card tilt-card delay-1">
+          <div class="feature-badge">02</div>
+          <h3>Advanced Math</h3>
+          <p>Quadratics, nonlinear functions, radicals, and complex expressions.</p>
+        </article>
+        <article class="feature-card tilt-card delay-2">
+          <div class="feature-badge">03</div>
+          <h3>Data + Geometry</h3>
+          <p>Ratios, percentages, statistics, geometry, and applied reasoning.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="section split-zone reveal">
+      <div class="split-layout">
+        <div class="split-left">
+          <p class="eyebrow">HOW TO APPROACH IT</p>
+          <h2>Good setup beats messy speed.</h2>
+          <p>Students often lose points because they rush into calculation before understanding the situation.</p>
+        </div>
+        <div class="stack-cards">
+          <div class="glass-card tilt-card"><h3 style="color:var(--peach);">Read first</h3><p>Know exactly what the question wants.</p></div>
+          <div class="glass-card tilt-card"><h3 style="color:var(--peach);">Model the problem</h3><p>Translate words, graphs, and tables into the right math setup.</p></div>
+          <div class="glass-card tilt-card"><h3 style="color:var(--peach);">Check the result</h3><p>Make sure the answer matches the quantity asked for.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section reveal">
+      <div class="section-heading">
+        <p class="eyebrow">THE DIGITAL ADVANTAGE</p>
+        <h2>Desmos is your secret weapon.</h2>
+        <p>You have a graphing calculator built into the test. Use it to bypass tedious algebra.</p>
+      </div>
+      <div class="grid-3">
+        <div class="glass-card tilt-card"><h3 style="color:var(--chili);">Systems of Equations</h3><p>Type both equations into Desmos and click the intersection. That's your answer.</p></div>
+        <div class="glass-card tilt-card"><h3 style="color:var(--chili);">Finding the Vertex</h3><p>Graph the quadratic and click the peak or valley. Done.</p></div>
+        <div class="glass-card tilt-card"><h3 style="color:var(--chili);">Equivalent Expressions</h3><p>Graph the original and each choice. The correct one overlaps perfectly.</p></div>
+      </div>
+    </section>
+
+    <section class="section reveal">
+      <h2 style="text-align:center;margin-bottom:40px;">The Math Commandments</h2>
+      <div class="grid-3">
+        <details class="glass-card accordion-item">
+          <summary class="accordion-header">Commandment I: The Discriminant</summary>
+          <div class="accordion-body">If a quadratic has "no real solutions", set b² − 4ac &lt; 0. If it has "one solution", set b² − 4ac = 0.</div>
+        </details>
+        <details class="glass-card accordion-item">
+          <summary class="accordion-header">Commandment II: Circle Equations</summary>
+          <div class="accordion-body">Always factor (x² + ax) + (y² + by) = c into (x−h)² + (y−k)² = r² by completing the square.</div>
+        </details>
+        <details class="glass-card accordion-item">
+          <summary class="accordion-header">Commandment III: System Traps</summary>
+          <div class="accordion-body">"Infinitely many solutions" means the lines are identical. Match their slopes and y-intercepts exactly.</div>
+        </details>
+      </div>
+    </section>
+
+    <!-- ══ FULL PRACTICE TESTS ══ -->
+    <section class="section reveal">
+      <div class="section-heading">
+        <p class="eyebrow">FULL PRACTICE TESTS</p>
+        <h2>3 Real SAT-Style Math Tests.</h2>
+        <p>Each test opens in a new tab in full Bluebook format — 2 modules of 22 questions, 35-minute timer per module, exactly like the real Digital SAT.</p>
+      </div>
+
+      <div class="pt-cards-grid">
+
+        <!-- TEST 1 -->
+        <div class="glass-card tilt-card pt-card reveal">
+          <div class="pt-card-header">
+            <div class="pt-badge pt-badge-1">Foundation</div>
+            <span class="pt-test-num">📐 Test 1</span>
+          </div>
+          <h3>Math Practice Test 1</h3>
+          <p>Algebra basics through advanced math. Module 1 covers foundations, Module 2 pushes into harder territory.</p>
+          <div class="pt-modules">
+            <div class="pt-module-row">
+              <div class="pt-module-dot"></div>
+              <div><strong>Module 1 — Foundations</strong><span>Algebra, problem solving, core geometry · 22 Qs · 35 min</span></div>
+            </div>
+            <div class="pt-module-row">
+              <div class="pt-module-dot"></div>
+              <div><strong>Module 2 — Advanced</strong><span>Complex expressions, multi-step reasoning · 22 Qs · 35 min</span></div>
+            </div>
+          </div>
+          <div class="pt-meta">
+            <span>⏱ 70 min total</span>
+            <span>📝 44 questions</span>
+            <span>📋 2 modules</span>
+          </div>
+          <a href="bluebook.html?subject=math&test=math-1" target="_blank" class="btn btn-primary pt-start-btn">Open Test 1 ↗</a>
+        </div>
+
+        <!-- TEST 2 -->
+        <div class="glass-card tilt-card pt-card reveal delay-1">
+          <div class="pt-card-header">
+            <div class="pt-badge pt-badge-2">Core</div>
+            <span class="pt-test-num">📊 Test 2</span>
+          </div>
+          <h3>Math Practice Test 2</h3>
+          <p>Equations, ratios, data analysis in Module 1 — rational expressions, exponents, and trig in Module 2.</p>
+          <div class="pt-modules">
+            <div class="pt-module-row">
+              <div class="pt-module-dot"></div>
+              <div><strong>Module 1 — Core Skills</strong><span>Equations, ratios, data, geometry · 22 Qs · 35 min</span></div>
+            </div>
+            <div class="pt-module-row">
+              <div class="pt-module-dot"></div>
+              <div><strong>Module 2 — Passport to Advanced</strong><span>Rational, exponentials, trig · 22 Qs · 35 min</span></div>
+            </div>
+          </div>
+          <div class="pt-meta">
+            <span>⏱ 70 min total</span>
+            <span>📝 44 questions</span>
+            <span>📋 2 modules</span>
+          </div>
+          <a href="bluebook.html?subject=math&test=math-2" target="_blank" class="btn btn-primary pt-start-btn">Open Test 2 ↗</a>
+        </div>
+
+        <!-- TEST 3 -->
+        <div class="glass-card tilt-card pt-card reveal delay-2">
+          <div class="pt-card-header">
+            <div class="pt-badge pt-badge-3">Advanced</div>
+            <span class="pt-test-num">🎯 Test 3</span>
+          </div>
+          <h3>Math Practice Test 3</h3>
+          <p>Mixed challenge Module 1 followed by the hardest SAT math — complex numbers, exponentials, circles, and more.</p>
+          <div class="pt-modules">
+            <div class="pt-module-row">
+              <div class="pt-module-dot"></div>
+              <div><strong>Module 1 — Mixed Challenge</strong><span>Balanced algebra, word problems · 22 Qs · 35 min</span></div>
+            </div>
+            <div class="pt-module-row">
+              <div class="pt-module-dot"></div>
+              <div><strong>Module 2 — Elite Difficulty</strong><span>Complex numbers, circles, exponents · 22 Qs · 35 min</span></div>
+            </div>
+          </div>
+          <div class="pt-meta">
+            <span>⏱ 70 min total</span>
+            <span>📝 44 questions</span>
+            <span>📋 2 modules</span>
+          </div>
+          <a href="bluebook.html?subject=math&test=math-3" target="_blank" class="btn btn-primary pt-start-btn">Open Test 3 ↗</a>
+        </div>
+
+      </div>
+    </section>
+
+    <section class="section center-section reveal">
+      <p class="eyebrow">QUICK PRACTICE</p>
+      <h2>Want shorter sessions? Use the Arena.</h2>
+      <div class="hero-buttons centered-buttons">
+        <a href="sat-fundamentals.html" class="btn btn-primary">Open The Arena</a>
+        <a href="reading-writing.html" class="btn btn-secondary">Go to Reading & Writing</a>
+      </div>
+    </section>
+  </main>
+
+  <div id="site-footer"></div>
+  <script src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PeakSAT | Account</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="dashboard.css" />
+</head>
+<body data-page="account">
+  <div class="page-enter"></div>
+  <div class="ambient ambient-1"></div>
+  <div class="ambient ambient-2"></div>
+  <div class="ambient ambient-3"></div>
+  <div class="mesh-overlay"></div>
+
+  <div id="site-nav"></div>
+
+  <main class="page-main">
+
+    <!-- ── PAGE HERO ── -->
+    <section class="page-hero container">
+      <div class="page-hero-text reveal">
+        <p class="eyebrow">ACCOUNT</p>
+        <h1>Sign in to track your progress.</h1>
+        <p>Your stats are stored securely with Firebase and sync across devices.</p>
+      </div>
+    </section>
+
+    <!-- ── AUTH AREA ── -->
+    <section class="section container">
+
+      <!-- Tab switcher (hidden when logged in) -->
+      <div class="auth-tabs reveal">
+        <button class="auth-tab active" data-tab="login">Sign In</button>
+        <button class="auth-tab"        data-tab="signup">Create Account</button>
+      </div>
+
+      <!-- ═══ SIGN IN PANEL ═══ -->
+      <div id="loginPanel" class="auth-form-panel reveal">
+        <div class="glass-card auth-card">
+
+          <div class="auth-card-header">
+            <span class="auth-icon">🔑</span>
+            <h2>Welcome back</h2>
+            <p>Sign in to your PeakSAT account.</p>
+          </div>
+
+          <div id="alertLogin" class="auth-alert" style="display:none;"></div>
+
+          <form id="loginForm" class="auth-form">
+
+            <div class="auth-field">
+              <label for="loginEmail">Email</label>
+              <div class="input-wrap">
+                <span class="input-icon">✉️</span>
+                <input type="email" id="loginEmail" placeholder="you@example.com" required autocomplete="email">
+              </div>
+            </div>
+
+            <div class="auth-field">
+              <label for="loginPassword">Password</label>
+              <div class="input-wrap">
+                <span class="input-icon">🔒</span>
+                <input type="password" id="loginPassword" placeholder="Enter your password" required autocomplete="current-password">
+                <button type="button" class="toggle-pw">SHOW</button>
+              </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary auth-submit">
+              Sign In
+              <span class="btn-spinner" style="display:none;">⏳</span>
+            </button>
+
+          </form>
+
+          <p class="auth-switch">
+            Don't have an account?
+            <a href="#" onclick="document.querySelector('[data-tab=signup]').click();return false;">Create one →</a>
+          </p>
+        </div>
+      </div>
+
+      <!-- ═══ SIGN UP PANEL ═══ -->
+      <div id="signupPanel" class="auth-form-panel reveal" style="display:none;">
+        <div class="glass-card auth-card">
+
+          <div class="auth-card-header">
+            <span class="auth-icon">🚀</span>
+            <h2>Join PeakSAT</h2>
+            <p>Create a free account and start tracking your progress.</p>
+          </div>
+
+          <div id="alertSignup" class="auth-alert" style="display:none;"></div>
+
+          <form id="signupForm" class="auth-form">
+
+            <div class="auth-field">
+              <label for="signupName">Full Name</label>
+              <div class="input-wrap">
+                <span class="input-icon">👤</span>
+                <input type="text" id="signupName" placeholder="Your name" required autocomplete="name">
+              </div>
+            </div>
+
+            <div class="auth-field">
+              <label for="signupEmail">Email</label>
+              <div class="input-wrap">
+                <span class="input-icon">✉️</span>
+                <input type="email" id="signupEmail" placeholder="you@example.com" required autocomplete="email">
+              </div>
+            </div>
+
+            <div class="auth-field">
+              <label for="signupPassword">Password</label>
+              <div class="input-wrap">
+                <span class="input-icon">🔒</span>
+                <input type="password" id="signupPassword" placeholder="At least 6 characters" required autocomplete="new-password">
+                <button type="button" class="toggle-pw">SHOW</button>
+              </div>
+              <!-- password strength bar -->
+              <div class="pw-strength">
+                <div class="pw-bar-track">
+                  <div class="pw-bar-fill" id="pwStrengthFill" style="width:0%;"></div>
+                </div>
+                <span id="pwStrengthLabel" style="font-size:0.75rem;color:var(--muted);font-weight:700;min-width:44px;"></span>
+              </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary auth-submit">
+              Create Account
+              <span class="btn-spinner" style="display:none;">⏳</span>
+            </button>
+
+          </form>
+
+          <p class="auth-switch">
+            Already have an account?
+            <a href="#" onclick="document.querySelector('[data-tab=login]').click();return false;">Sign in →</a>
+          </p>
+        </div>
+      </div>
+
+      <!-- ═══ DASHBOARD (shown when signed in) ═══ -->
+      <div id="dashPanel" class="auth-form-panel reveal" style="display:none;">
+        <!-- rendered by firebase-auth.js -->
+        <div class="glass-card auth-card" style="text-align:center;padding:48px 28px;">
+          <span style="font-size:2rem;">⏳</span>
+          <p style="color:var(--muted);margin-top:12px;">Loading your account…</p>
+        </div>
+      </div>
+
+    </section>
+  </main>
+
+  <div id="site-footer"></div>
+
+  <!-- Non-module scripts first (nav / quiz engine) -->
+  <script src="script.js"></script>
+
+  <!-- Firebase auth as ES module -->
+  <script type="module">
+    import { initAccountPage } from "./firebase-auth.js";
+    initAccountPage();
+  </script>
+</body>
+</html>

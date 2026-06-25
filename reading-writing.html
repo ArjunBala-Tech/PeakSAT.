@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PeakSAT | Reading & Writing</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    .pt-cards-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:22px; }
+    .pt-card { padding:28px; display:flex; flex-direction:column; gap:14px; }
+    .pt-card-header { display:flex; justify-content:space-between; align-items:center; }
+    .pt-badge { padding:5px 13px; border-radius:999px; font-size:0.78rem; font-weight:800; font-family:"Space Grotesk",sans-serif; text-transform:uppercase; letter-spacing:0.8px; }
+    .pt-badge-1 { background:rgba(6,214,160,0.12); border:1px solid rgba(6,214,160,0.3); color:#06D6A0; }
+    .pt-badge-2 { background:rgba(255,209,102,0.12); border:1px solid rgba(255,209,102,0.3); color:#FFD166; }
+    .pt-badge-3 { background:rgba(230,46,45,0.12); border:1px solid rgba(230,46,45,0.3); color:#E62E2D; }
+    .pt-test-num { font-size:0.85rem; font-weight:700; color:var(--muted); font-family:"Space Grotesk",sans-serif; }
+    .pt-card h3 { font-size:1rem; line-height:1.4; margin:0; }
+    .pt-card p  { color:var(--muted); font-size:0.88rem; line-height:1.6; flex:1; }
+    .pt-modules { display:flex; flex-direction:column; gap:8px; }
+    .pt-module-row { display:flex; gap:8px; align-items:flex-start; }
+    .pt-module-dot { width:7px; height:7px; border-radius:50%; background:var(--peach); flex-shrink:0; margin-top:5px; }
+    .pt-module-row strong { font-size:0.8rem; color:var(--text); display:block; margin-bottom:1px; }
+    .pt-module-row span   { font-size:0.76rem; color:var(--muted); }
+    .pt-meta { display:flex; gap:8px; flex-wrap:wrap; padding-top:12px; border-top:1px solid var(--line); }
+    .pt-meta span { font-size:0.78rem; color:var(--muted); font-weight:600; }
+    .pt-start-btn { width:100%; margin-top:4px; }
+    @media(max-width:1080px){ .pt-cards-grid{ grid-template-columns:1fr; } }
+  </style>
+</head>
+<body data-page="reading-writing">
+  <div class="page-enter"></div>
+  <div class="ambient ambient-1"></div>
+  <div class="ambient ambient-2"></div>
+  <div class="ambient ambient-3"></div>
+  <div class="mesh-overlay"></div>
+  <div id="site-nav"></div>
+
+  <main class="page-main container">
+    <section class="page-hero reveal">
+      <div class="page-hero-text">
+        <p class="eyebrow">READING & WRITING</p>
+        <h1>Master the section that tests how well you read, analyze, and revise.</h1>
+        <p>SAT Reading & Writing tests whether students can understand meaning, evaluate evidence, use grammar correctly, and improve writing with precision.</p>
+      </div>
+    </section>
+
+    <section class="section reveal">
+      <div class="feature-grid guide-wide">
+        <article class="feature-card tilt-card"><div class="feature-badge">01</div><h3>Information and Ideas</h3><p>Main ideas, details, evidence, and inference questions.</p></article>
+        <article class="feature-card tilt-card delay-1"><div class="feature-badge">02</div><h3>Craft and Structure</h3><p>Vocabulary in context, author purpose, tone, and text structure.</p></article>
+        <article class="feature-card tilt-card delay-2"><div class="feature-badge">03</div><h3>Expression + Conventions</h3><p>Revision, transitions, punctuation, grammar, and sentence correctness.</p></article>
+      </div>
+    </section>
+
+    <section class="section split-zone reveal">
+      <div class="split-layout">
+        <div class="split-left">
+          <p class="eyebrow">HOW TO THINK ABOUT IT</p>
+          <h2>Precision matters more than sounding smart.</h2>
+          <p>The SAT rewards the answer that best matches the text, not the one that sounds the fanciest.</p>
+        </div>
+        <div class="stack-cards">
+          <div class="glass-card tilt-card"><h3 style="color:var(--peach);">Read the exact wording</h3><p>Small clue words can completely change the answer.</p></div>
+          <div class="glass-card tilt-card"><h3 style="color:var(--peach);">Use the passage</h3><p>Answer from the text, not from outside opinion or memory.</p></div>
+          <div class="glass-card tilt-card"><h3 style="color:var(--peach);">Eliminate carefully</h3><p>Often the best solve is proving why the other choices fail.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section reveal">
+      <div class="split-layout align-center">
+        <div class="split-left">
+          <p class="eyebrow">GRAMMAR RULES</p>
+          <h2>Punctuation is a math formula.</h2>
+          <p>The SAT tests strict grammatical rules. Memorize these three punctuation laws.</p>
+        </div>
+        <div class="accordion-stack">
+          <details class="glass-card accordion-item">
+            <summary class="accordion-header"><strong>Semicolons (;) and Periods (.)</strong></summary>
+            <div class="accordion-body"><p>Grammatically identical on the SAT — both must separate two complete, independent sentences.</p><p><em>Trick:</em> If two choices are identical except one has a period and one a semicolon — eliminate BOTH.</p></div>
+          </details>
+          <details class="glass-card accordion-item">
+            <summary class="accordion-header"><strong>Colons (:)</strong></summary>
+            <div class="accordion-body"><p>Introduces a list, explanation, or quote. The sentence BEFORE the colon must be a complete, independent sentence.</p></div>
+          </details>
+          <details class="glass-card accordion-item">
+            <summary class="accordion-header"><strong>Commas (,) with FANBOYS</strong></summary>
+            <div class="accordion-body"><p>To join two complete sentences with a comma, you MUST use FANBOYS (For, And, Nor, But, Or, Yet, So).</p><p><em>Correct:</em> "I studied, <strong>so</strong> I aced it." &nbsp; <em>Wrong:</em> "I studied, I aced it." (Comma Splice)</p></div>
+          </details>
+        </div>
+      </div>
+    </section>
+
+    <section class="section reveal">
+      <div class="section-heading">
+        <p class="eyebrow">STRATEGY</p>
+        <h2>How to spot Trap Answers</h2>
+        <p>The CollegeBoard writes incorrect answers using very specific patterns. Learn to spot them.</p>
+      </div>
+      <div class="grid-3">
+        <div class="glass-card tilt-card"><h3 style="color:var(--chili);">Extreme Language</h3><p>Watch for <em>always, never, impossible, prove</em>. Correct answers are usually moderate: <em>suggests, indicates, often</em>.</p></div>
+        <div class="glass-card tilt-card"><h3 style="color:var(--chili);">Half-Right, All-Wrong</h3><p>The first half matches perfectly, but the last three words ruin it. Read the <strong>entire</strong> choice.</p></div>
+        <div class="glass-card tilt-card"><h3 style="color:var(--chili);">True, but Irrelevant</h3><p>It may be factually true in the real world — but if it's not in the passage, it's wrong.</p></div>
+      </div>
+    </section>
+
+    <!-- ══ FULL PRACTICE TESTS ══ -->
+    <section class="section reveal">
+      <div class="section-heading">
+        <p class="eyebrow">FULL PRACTICE TESTS</p>
+        <h2>3 Real SAT-Style Reading & Writing Tests.</h2>
+        <p>Each test opens in a full Bluebook-style new tab — 2 modules of 27 questions, 32-minute timer per module. Exactly like the real Digital SAT.</p>
+      </div>
+
+      <div class="pt-cards-grid">
+
+        <!-- TEST 1 -->
+        <div class="glass-card tilt-card pt-card reveal">
+          <div class="pt-card-header">
+            <div class="pt-badge pt-badge-1">Foundation</div>
+            <span class="pt-test-num">📖 Test 1</span>
+          </div>
+          <h3>Reading & Writing Practice Test 1</h3>
+          <p>Core comprehension through advanced analysis. Module 1 covers the full range, Module 2 dives deeper into rhetoric and conventions.</p>
+          <div class="pt-modules">
+            <div class="pt-module-row">
+              <div class="pt-module-dot"></div>
+              <div><strong>Module 1 — Core Comprehension</strong><span>Vocabulary, main ideas, grammar · 27 Qs · 32 min</span></div>
+            </div>
+            <div class="pt-module-row">
+              <div class="pt-module-dot"></div>
+              <div><strong>Module 2 — Advanced Analysis</strong><span>Rhetorical analysis, argument, conventions · 27 Qs · 32 min</span></div>
+            </div>
+          </div>
+          <div class="pt-meta">
+            <span>⏱ 64 min total</span>
+            <span>📝 54 questions</span>
+            <span>📋 2 modules</span>
+          </div>
+          <a href="bluebook.html?subject=english&test=english-1" target="_blank" class="btn btn-primary pt-start-btn">Open Test 1 ↗</a>
+        </div>
+
+        <!-- TEST 2 -->
+        <div class="glass-card tilt-card pt-card reveal delay-1">
+          <div class="pt-card-header">
+            <div class="pt-badge pt-badge-2">Core</div>
+            <span class="pt-test-num">✍️ Test 2</span>
+          </div>
+          <h3>Reading & Writing Practice Test 2</h3>
+          <p>Author purpose and text structure in Module 1 — transitions, sentence structure, and grammar mastery in Module 2.</p>
+          <div class="pt-modules">
+            <div class="pt-module-row">
+              <div class="pt-module-dot"></div>
+              <div><strong>Module 1 — Craft & Structure</strong><span>Purpose, tone, evidence-based reading · 27 Qs · 32 min</span></div>
+            </div>
+            <div class="pt-module-row">
+              <div class="pt-module-dot"></div>
+              <div><strong>Module 2 — Expression & Conventions</strong><span>Transitions, grammar, revision · 27 Qs · 32 min</span></div>
+            </div>
+          </div>
+          <div class="pt-meta">
+            <span>⏱ 64 min total</span>
+            <span>📝 54 questions</span>
+            <span>📋 2 modules</span>
+          </div>
+          <a href="bluebook.html?subject=english&test=english-2" target="_blank" class="btn btn-primary pt-start-btn">Open Test 2 ↗</a>
+        </div>
+
+        <!-- TEST 3 -->
+        <div class="glass-card tilt-card pt-card reveal delay-2">
+          <div class="pt-card-header">
+            <div class="pt-badge pt-badge-3">Advanced</div>
+            <span class="pt-test-num">🎯 Test 3</span>
+          </div>
+          <h3>Reading & Writing Practice Test 3</h3>
+          <p>Inference and data interpretation in Module 1 — the complete RW skillset with the hardest questions in Module 2.</p>
+          <div class="pt-modules">
+            <div class="pt-module-row">
+              <div class="pt-module-dot"></div>
+              <div><strong>Module 1 — Information & Ideas</strong><span>Inference, data, central ideas · 27 Qs · 32 min</span></div>
+            </div>
+            <div class="pt-module-row">
+              <div class="pt-module-dot"></div>
+              <div><strong>Module 2 — Full Spectrum</strong><span>Complete skillset, hardest questions · 27 Qs · 32 min</span></div>
+            </div>
+          </div>
+          <div class="pt-meta">
+            <span>⏱ 64 min total</span>
+            <span>📝 54 questions</span>
+            <span>📋 2 modules</span>
+          </div>
+          <a href="bluebook.html?subject=english&test=english-3" target="_blank" class="btn btn-primary pt-start-btn">Open Test 3 ↗</a>
+        </div>
+
+      </div>
+    </section>
+
+    <section class="section center-section reveal">
+      <p class="eyebrow">QUICK PRACTICE</p>
+      <h2>Want shorter sessions? Use the Arena.</h2>
+      <div class="hero-buttons centered-buttons">
+        <a href="sat-fundamentals.html" class="btn btn-primary">Open The Arena</a>
+        <a href="math.html" class="btn btn-secondary">Go to Math</a>
+      </div>
+    </section>
+  </main>
+
+  <div id="site-footer"></div>
+  <script src="script.js"></script>
+</body>
+</html>

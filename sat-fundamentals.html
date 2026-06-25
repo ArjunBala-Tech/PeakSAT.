@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PeakSAT | The Arena</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body data-page="sat-fundamentals">
+  <div class="page-enter"></div>
+  <div class="ambient ambient-1"></div>
+  <div class="ambient ambient-2"></div>
+  <div class="ambient ambient-3"></div>
+  <div class="mesh-overlay"></div>
+
+  <div id="site-nav"></div>
+
+  <main class="page-main container">
+    <section class="page-hero reveal">
+      <p class="eyebrow">THE ARENA</p>
+      <h1>Train Under Pressure</h1>
+      <p>Real questions. Real timer. Instant feedback to sharpen your skills.</p>
+    </section>
+
+    <section class="section" style="padding-top:0;">
+      <div id="quizSetup" class="glass-card reveal setup-card">
+        <h2>Configure Your Session</h2>
+        <p class="setup-subtitle">Choose your subject, difficulty, and session length.</p>
+
+        <div class="setup-grid">
+          <div class="setup-field">
+            <label class="setup-label">Subject</label>
+            <select id="subjectFilter" class="setup-select">
+              <option value="all">Full Adaptive Mix (Math + RW)</option>
+              <option value="english">Reading & Writing Only</option>
+              <option value="math">Math Only</option>
+            </select>
+          </div>
+
+          <div class="setup-field">
+            <label class="setup-label">Difficulty</label>
+            <select id="difficultyFilter" class="setup-select">
+              <option value="all">All Difficulties</option>
+              <option value="easy">Easy</option>
+              <option value="medium">Medium</option>
+              <option value="hard">Hard</option>
+            </select>
+          </div>
+
+          <div class="setup-field">
+            <label class="setup-label">Session Length</label>
+            <select id="sessionLengthFilter" class="setup-select">
+              <option value="5">Sprint — 5 Questions</option>
+              <option value="10" selected>Standard — 10 Questions</option>
+              <option value="15">Extended — 15 Questions</option>
+              <option value="20">Full Module — 20 Questions</option>
+              <option value="27">SAT Module — 27 Questions</option>
+            </select>
+          </div>
+        </div>
+
+        <button id="startQuizBtn" class="btn btn-primary start-btn">
+          <span>Enter the Arena</span> <span class="btn-arrow">→</span>
+        </button>
+      </div>
+
+      <div id="quizDashboard" style="display:none;">
+        <div class="quiz-stats glass-card reveal">
+          <div class="quiz-stat">
+            <span class="quiz-stat-label">Question</span>
+            <span class="quiz-stat-value" id="currentQuestionLabel">0 / 0</span>
+          </div>
+          <div class="quiz-stat">
+            <span class="quiz-stat-label">Score</span>
+            <span class="quiz-stat-value" id="scoreLabel">0</span>
+          </div>
+          <div class="quiz-stat">
+            <span class="quiz-stat-label">Accuracy</span>
+            <span class="quiz-stat-value" id="accuracyLabel">–</span>
+          </div>
+        </div>
+        <div class="progress-outer reveal">
+          <div class="progress-inner" id="quizProgressBar"></div>
+        </div>
+        <div id="loggedInBanner" class="account-banner reveal"></div>
+      </div>
+
+      <div id="quizContainer" style="max-width:820px; margin:0 auto;">
+        <div class="empty-state glass-card reveal">
+          <div class="feature-badge" style="margin:0 auto 20px;">⚔️</div>
+          <h3>Ready to enter the Arena?</h3>
+          <p>Configure your session above and hit <strong>Enter the Arena</strong>.</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div id="site-footer"></div>
+  <script src="english.js"></script>
+  <script src="math.js"></script>
+  <script src="script.js"></script>
+
+  <!-- Firebase data bridge: exposes window.PeakSATData to the non-module Arena engine -->
+  <script type="module">
+    import { saveArenaSession, fbAuth } from "./peaksat-data.js";
+    import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+    window.PeakSATData = {
+      isSignedIn: () => !!fbAuth.currentUser,
+      saveArenaSession
+    };
+
+    onAuthStateChanged(fbAuth, (user) => {
+      if (typeof window.updatePeakBanner === "function") window.updatePeakBanner(user);
+    });
+  </script>
+</body>
+</html>
